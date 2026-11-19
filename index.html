@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#0b0d1f" />
+    <meta name="description" content="Tilt Marble: roll a marble over floating isometric courses by tilting your phone." />
+    <title>Tilt Marble</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <script type="module" crossorigin src="/tilt-marble-play/assets/main-D-rAPQBY.js"></script>
+    <link rel="modulepreload" crossorigin href="/tilt-marble-play/assets/progress-BYJHeK9Y.js">
+    <link rel="stylesheet" crossorigin href="/tilt-marble-play/assets/main-DRoz5wUo.css">
+  </head>
+  <body>
+    <canvas id="game" aria-label="Tilt Marble game view"></canvas>
+    <div id="joystick" aria-hidden="true"><div class="knob"></div></div>
+
+    <header id="hud" class="hidden">
+      <div class="hud-left">
+        <span id="hud-course" class="pill"></span>
+        <span id="hud-lives" class="pill" aria-label="Lives"></span>
+      </div>
+      <div class="hud-mid">
+        <span id="hud-time" class="time">0.0</span>
+        <span id="hud-best" class="sub"></span>
+      </div>
+      <div class="hud-right">
+        <button id="btn-recal" class="icon-btn hidden" aria-label="Re-calibrate tilt" title="Re-calibrate (C)">⟲</button>
+        <button id="btn-pause" class="icon-btn" aria-label="Pause" title="Pause (P / Esc)">❚❚</button>
+      </div>
+    </header>
+
+    <div id="countdown" class="hidden" aria-live="assertive"></div>
+    <div id="toast" class="hidden" role="status" aria-live="polite"></div>
+    <div id="tilt-meter" class="hidden" aria-hidden="true"><div class="dot"></div></div>
+    <div id="rotate-hint" class="hidden">Turn your phone sideways for a wider view</div>
+
+    <section id="screen-loading" class="screen">
+      <div class="card center">
+        <h1 class="logo">TILT<span>MARBLE</span></h1>
+        <p id="loading-text">Loading physics…</p>
+      </div>
+    </section>
+
+    <section id="screen-title" class="screen hidden">
+      <svg id="constellation" viewBox="-60 -60 120 120" aria-hidden="true"></svg>
+      <div class="card">
+        <h1 class="logo">TILT<span>MARBLE</span></h1>
+        <p class="tagline">Forty-five floating courses. One marble. Lean to roll.</p>
+        <div class="stack">
+          <button id="btn-tilt" class="btn primary touch-only">Enable Tilt &amp; Play</button>
+          <button id="btn-touch" class="btn touch-only">Play with Touch Joystick</button>
+          <button id="btn-keys" class="btn primary desk-only">Play (Keyboard)</button>
+          <button id="btn-keys-touch" class="btn desk-only">Play with Mouse / Touch Drag</button>
+        </div>
+        <p id="tilt-note" class="note touch-only">Hold the phone comfortably, tap Enable Tilt, then lean it gently to steer.</p>
+        <div class="row">
+          <button id="btn-settings" class="btn small">Settings</button>
+          <button id="btn-help" class="btn small">How to play</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-permission" class="screen hidden">
+      <div class="card center">
+        <h2 id="perm-title">Motion sensor</h2>
+        <p id="perm-text">Waiting for the motion sensor…</p>
+        <div id="perm-actions" class="stack hidden">
+          <button id="btn-perm-retry" class="btn primary">Retry tilt</button>
+          <button id="btn-perm-touch" class="btn">Use touch joystick</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-courses" class="screen hidden">
+      <div class="card wide">
+        <h2>Choose a course</h2>
+        <p id="star-total" class="star-total"></p>
+        <p id="mode-line" class="note"></p>
+        <div id="course-list"></div>
+        <div class="row">
+          <button id="btn-courses-back" class="btn small">Back</button>
+          <button id="btn-courses-settings" class="btn small">Settings</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-calibrating" class="screen hidden">
+      <div class="card center">
+        <h2>Calibrating</h2>
+        <p>Hold the phone the way you want to play and keep it still.</p>
+        <div class="spinner" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section id="screen-pause" class="screen hidden">
+      <div class="card center">
+        <h2>Paused</h2>
+        <p id="pause-hint" class="note hidden">Changed your grip or rotated the phone? Re-calibrate first.</p>
+        <div class="stack">
+          <button id="btn-resume" class="btn primary">Resume</button>
+          <button id="btn-pause-recal" class="btn hidden">Re-calibrate tilt</button>
+          <button id="btn-restart" class="btn">Restart course</button>
+          <button id="btn-pause-settings" class="btn">Settings</button>
+          <button id="btn-quit" class="btn">Courses</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-clear" class="screen hidden">
+      <div class="card center">
+        <h2>Course clear!</h2>
+        <div id="clear-stars" class="stars"></div>
+        <p id="clear-time" class="big"></p>
+        <p id="clear-clock" class="note hidden"></p>
+        <p id="clear-best" class="note"></p>
+        <div class="stack">
+          <button id="btn-next" class="btn primary">Next course</button>
+          <button id="btn-clear-retry" class="btn">Retry</button>
+          <button id="btn-clear-courses" class="btn">Courses</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-gameover" class="screen hidden">
+      <div class="card center">
+        <h2 id="over-title">Out of marbles</h2>
+        <p id="over-text">You used all three lives on this course.</p>
+        <div class="stack">
+          <button id="btn-retry" class="btn primary">Retry course</button>
+          <button id="btn-over-courses" class="btn">Courses</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-settings" class="screen hidden">
+      <div class="card wide">
+        <h2>Settings</h2>
+        <div class="settings">
+          <label>Tilt sensitivity <output id="out-sens"></output>
+            <input id="set-sens" type="range" min="8" max="40" step="1" />
+          </label>
+          <p class="note">Degrees of tilt for full speed. Lower = more sensitive.</p>
+          <label>Dead zone <output id="out-dead"></output>
+            <input id="set-dead" type="range" min="0" max="0.25" step="0.01" />
+          </label>
+          <label class="check"><input id="set-invx" type="checkbox" /> Invert left / right</label>
+          <label class="check"><input id="set-invy" type="checkbox" /> Invert forward / back</label>
+          <label class="check"><input id="set-autolevel" type="checkbox" /> Re-level tilt at every start and respawn</label>
+          <p class="note">The grip you hold at GO becomes level.</p>
+          <label>Top speed <output id="out-top"></output>
+            <input id="set-top" type="range" min="7" max="13" step="0.5" />
+          </label>
+          <p class="note">How fast leaning alone can roll the marble. Speeding up from a stop feels the same; slopes still roll faster. Every course can be passed at any setting.</p>
+          <label>Graphics
+            <select id="set-quality">
+              <option value="auto">Auto</option>
+              <option value="high">High</option>
+              <option value="low">Low (faster)</option>
+            </select>
+          </label>
+          <label class="check"><input id="set-mute" type="checkbox" /> Mute sound (M)</label>
+          <button id="btn-set-recal" class="btn small hidden">Re-calibrate tilt now</button>
+        </div>
+        <div class="row"><button id="btn-settings-back" class="btn primary">Done</button></div>
+      </div>
+    </section>
+
+    <section id="screen-help" class="screen hidden">
+      <div class="card wide">
+        <h2>How to play</h2>
+        <ul class="help">
+          <li>Roll the marble from the start pad to the <b>checkered goal</b>.</li>
+          <li><b>Phone:</b> tap <i>Enable Tilt &amp; Play</i>, allow motion access, hold still while it calibrates, then lean the phone. Lean right to roll right on screen, tip the top edge away to roll up the screen. The grip you hold at GO is level, so you can settle your grip during every countdown. Tap ⟲ any time to re-level by hand.</li>
+          <li><b>Touch:</b> put a finger anywhere on the course and drag. Lift to let go.</li>
+          <li><b>Keyboard:</b> arrow keys or WASD. P / Esc pauses, R restarts, C re-calibrates, M mutes.</li>
+          <li>Falling off costs a life and puts you back at the last <b>flag</b>. Three lives per course.</li>
+          <li>Blue gems take 2 seconds off your time. Beat the par time and keep every life for three stars.</li>
+          <li>Orange blocks slide, yellow gates rise (they flash first), red arms sweep. Pink bumpers kick.</li>
+          <li><b>Downhill Rush:</b> no lives, a race against the clock instead. Falling off costs time, gems add 3 seconds, and the time you have left carries over to the next course. Small step-downs are fine, but a drop of more than about 4 marble-heights shatters the marble. Dark marbles with eyes are rivals: they roll straight at you.</li>
+        </ul>
+        <div class="row"><button id="btn-help-back" class="btn primary">Got it</button></div>
+      </div>
+    </section>
+
+    <section id="screen-error" class="screen hidden">
+      <div class="card center">
+        <h2>Something went wrong</h2>
+        <p id="error-text"></p>
+        <button id="btn-reload" class="btn primary">Reload</button>
+      </div>
+    </section>
+
+    <div id="debug" class="hidden"></div>
+  </body>
+</html>

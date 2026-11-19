@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Tilt Marble sensor test</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <style>body{color:#f4f6ff;background:#0b0d1f;margin:0;padding:16px;font:16px/1.4 system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif}h1{font-size:1.3rem}button{font:inherit;color:#1a1400;background:#ffd23f;border:0;border-radius:12px;min-height:48px;margin:4px 8px 4px 0;padding:8px 16px;font-weight:650}button.alt{color:#fff;background:#2a2f5a}pre{white-space:pre-wrap;background:#15183a;border-radius:10px;padding:12px;font-size:14px}#pad{border:2px solid #4fb3ff;border-radius:50%;width:200px;height:200px;margin:12px 0;position:relative}#dot{background:#ffd23f;border-radius:50%;width:22px;height:22px;margin:-11px 0 0 -11px;position:absolute;top:50%;left:50%}.note{color:#a9b1d6;font-size:.9rem}a{color:#4fb3ff}</style>
+    <script type="module" crossorigin src="/tilt-marble-play/assets/sensor-D3-ZF5Vb.js"></script>
+    <link rel="modulepreload" crossorigin href="/tilt-marble-play/assets/progress-BYJHeK9Y.js">
+  </head>
+  <body>
+    <h1>Tilt Marble — motion sensor test</h1>
+    <p class="note">Nothing here leaves your phone. Tap <b>Request motion access</b>, hold the phone how you like, tap <b>Calibrate</b>, then lean it. The yellow dot should move the way you lean: right → right, top edge away → up.</p>
+    <button id="req">Request motion access</button>
+    <button id="cal" class="alt">Calibrate</button>
+    <a href="./">Back to the game</a>
+    <div id="pad"><div id="dot"></div></div>
+    <pre id="out">Not started.</pre>
+  </body>
+</html>
